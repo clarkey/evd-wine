@@ -66,24 +66,34 @@ docker run --rm evd-wine ExportVaultData /?
 
 ### Create a credential file
 
+Use the `/EntropyFile` flag to encrypt the credential file. Windows DPAPI is not available under Wine, so `/EntropyFile` is the correct protection method for this environment. It generates two files: a `.cred` file and a `.cred.entropy` file. Both are required at runtime.
+
 ```bash
+mkdir -p creds && chmod 777 creds
+
 docker run --rm \
-  -v $(pwd)/output:/home/wineuser/app/output \
-  evd-wine CreateCredFile output/user.cred Password \
+  -v $(pwd)/creds:/home/wineuser/app/creds \
+  evd-wine CreateCredFile creds/user.cred Password \
     /username <username> \
-    /password <password>
+    /password <password> \
+    /AppType EVD \
+    /EntropyFile
 ```
+
+This produces:
+- `creds/user.cred` — encrypted credential file
+- `creds/user.cred.entropy` — entropy key (keep alongside the cred file)
 
 ### Run an export
 
 ```bash
 docker run --rm \
   -v $(pwd)/Vault.ini:/home/wineuser/app/Vault.ini:ro \
-  -v $(pwd)/user.cred:/home/wineuser/app/user.cred:ro \
+  -v $(pwd)/creds:/home/wineuser/app/creds:ro \
   -v $(pwd)/output:/home/wineuser/app/output \
   evd-wine ExportVaultData \
     \\VaultFile=Vault.ini \
-    \\CredFile=user.cred \
+    \\CredFile=creds/user.cred \
     \\LogFile=output/evd.log \
     \\Target=FILE \
     \\safeslist=output/safes.csv
