@@ -13,9 +13,11 @@ These are the software prerequisites specified in the [CyberArk EVD system requi
 
 ## Prerequisites
 
-- Docker
+- Docker or Podman
 - **Must be built on an amd64 (x86_64) host.** Wine cannot run under QEMU emulation on ARM (Apple Silicon), so building on macOS with `--platform linux/amd64` will fail. Use a Linux amd64 VM or CI runner.
 - **CyberArk EVD utility** — the EVD binaries are not included in this repo (vendor software). Obtain the `ExportVaultData` release from your CyberArk representative and place the contents in an `ExportVaultData/` directory at the repo root.
+
+> All `docker` commands below work identically with `podman`.
 
 ## Build
 
@@ -71,7 +73,7 @@ Use the `/EntropyFile` flag to encrypt the credential file. Windows DPAPI is not
 ```bash
 mkdir -p creds && chmod 777 creds
 
-docker run --rm \
+docker run --rm --network host \
   -v $(pwd)/creds:/home/wineuser/app/creds \
   evd-wine CreateCredFile creds/user.cred Password \
     /username <username> \
@@ -87,7 +89,7 @@ This produces:
 ### Run an export
 
 ```bash
-docker run --rm \
+docker run --rm --network host \
   -v $(pwd)/Vault.ini:/home/wineuser/app/Vault.ini:ro \
   -v $(pwd)/creds:/home/wineuser/app/creds:ro \
   -v $(pwd)/output:/home/wineuser/app/output \
@@ -155,13 +157,9 @@ winetricks list-installed
 
 ### Network connectivity
 
-The EVD utility connects to the Vault over TCP (default port 1858). Make sure the container can reach the Vault:
+The EVD utility connects to the Vault over TCP (default port 1858). The examples above use `--network host` so the container shares the host's network stack. If you need to use bridge networking instead, ensure the container can route to the Vault and consider passing `--dns` if needed:
 
 ```bash
-# Use host networking (simplest for connectivity)
-docker run --rm --network host evd-wine ExportVaultData <args>
-
-# Or specify DNS
 docker run --rm --dns 10.0.0.1 evd-wine ExportVaultData <args>
 ```
 
