@@ -1,0 +1,4 @@
+# Vendor software - not shipped in repo
+ExportVaultData/
+
+.DS_Store
