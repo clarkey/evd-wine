@@ -36,8 +36,14 @@ COPY --chown=wineuser:wineuser ExportVaultData/ /home/wineuser/app
 
 WORKDIR /home/wineuser/app
 
+# Create default output and creds directories
+RUN mkdir -p /home/wineuser/app/output /home/wineuser/app/creds && \
+    chown wineuser:wineuser /home/wineuser/app/output /home/wineuser/app/creds
+
 # Use our own lightweight entrypoint instead of the base image's
 COPY --chown=wineuser:wineuser entrypoint.sh /home/wineuser/entrypoint.sh
 RUN chmod +x /home/wineuser/entrypoint.sh
 
+# Switch to root so entrypoint can fix volume mount ownership, then drop privileges
+USER root
 ENTRYPOINT ["/home/wineuser/entrypoint.sh"]

@@ -3,6 +3,10 @@ set -e
 
 APP_DIR="/home/wineuser/app"
 
+# Fix ownership of volume-mounted directories so wineuser can read/write them
+chown -R wineuser:wineuser "$APP_DIR/output" 2>/dev/null || true
+chown -R wineuser:wineuser "$APP_DIR/creds" 2>/dev/null || true
+
 # Suppress Wine/Xvfb runtime warnings
 export XDG_RUNTIME_DIR="/tmp/xdg-runtime"
 mkdir -p "$XDG_RUNTIME_DIR" 2>/dev/null || true
@@ -30,19 +34,19 @@ shift
 
 case "$CMD" in
     ExportVaultData)
-        exec wine "$APP_DIR/ExportVaultData.exe" "$@"
+        exec gosu wineuser wine "$APP_DIR/ExportVaultData.exe" "$@"
         ;;
     CreateCredFile)
-        exec wine "$APP_DIR/CreateCredFile/CreateCredFile.exe" "$@"
+        exec gosu wineuser wine "$APP_DIR/CreateCredFile/CreateCredFile.exe" "$@"
         ;;
     bash|sh)
-        exec /bin/bash "$@"
+        exec gosu wineuser /bin/bash "$@"
         ;;
     *.exe)
-        exec wine "$APP_DIR/$CMD" "$@"
+        exec gosu wineuser wine "$APP_DIR/$CMD" "$@"
         ;;
     *)
         # Pass everything directly to wine as a fallback
-        exec wine "$CMD" "$@"
+        exec gosu wineuser wine "$CMD" "$@"
         ;;
 esac
