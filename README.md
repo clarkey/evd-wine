@@ -94,16 +94,17 @@ This produces:
 docker run --rm --network host \
   -v /path/to/ExportVaultData:/home/wineuser/app/ExportVaultData \
   -v $(pwd)/creds:/home/wineuser/app/creds \
-  -v $(pwd)/output:/home/wineuser/app/output \
+  -v $(pwd)/logs:/home/wineuser/app/logs \
+  -v $(pwd)/exports:/home/wineuser/app/exports \
   evd-wine ExportVaultData \
     '\VaultFile=ExportVaultData\Vault.ini' \
     '\CredFile=creds\user.cred' \
-    '\LogFile=output\evd.log' \
+    '\LogFile=logs\evd.log' \
     '\Target=FILE' \
-    '\safeslist=output\safes.csv'
+    '\safeslist=exports\safes.csv'
 ```
 
-> **Note:** The EVD utility expects backslash-prefixed parameters (e.g. `\VaultFile=...`). Wrap each argument in single quotes to prevent the shell from interpreting the backslashes. All file paths are relative to the working directory `/home/wineuser/app/`, so `Vault.ini` is referenced as `ExportVaultData\Vault.ini` while `creds/` and `output/` are direct subdirectories.
+> **Note:** The EVD utility expects backslash-prefixed parameters (e.g. `\VaultFile=...`). Wrap each argument in single quotes to prevent the shell from interpreting the backslashes. All file paths are relative to the working directory `/home/wineuser/app/`, so `Vault.ini` is referenced as `ExportVaultData\Vault.ini` while `creds/`, `logs/`, and `exports/` are direct subdirectories.
 
 ### Available entrypoint commands
 
@@ -124,7 +125,8 @@ docker run --rm --network host \
 │   ├── CreateCredFile/
 │   │   └── CreateCredFile.exe
 │   └── *.dll
-├── output/                                  <- volume mount (for export results)
+├── logs/                                    <- volume mount (for log files)
+├── exports/                                 <- volume mount (for exported CSV data)
 └── creds/                                   <- volume mount (for credential files)
 ```
 

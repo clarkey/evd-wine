@@ -32,7 +32,7 @@ RUN xvfb-run winetricks -q vcrun2022 && \
     wineserver --wait
 
 # Create the app directory with mount point for ExportVaultData and default subdirectories
-RUN mkdir -p /home/wineuser/app/ExportVaultData /home/wineuser/app/output /home/wineuser/app/creds && \
+RUN mkdir -p /home/wineuser/app/ExportVaultData /home/wineuser/app/logs /home/wineuser/app/exports /home/wineuser/app/creds && \
     chown -R wineuser:wineuser /home/wineuser/app
 
 WORKDIR /home/wineuser/app

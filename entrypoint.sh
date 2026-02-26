@@ -45,9 +45,9 @@ validate_evd_dir() {
 # ---------------------------------------------------------------------------
 # Fix ownership/permissions of volume-mounted directories
 # ---------------------------------------------------------------------------
-mkdir -p "$APP_DIR/output" "$APP_DIR/creds" 2>/dev/null || true
-chown -R wineuser:wineuser "$APP_DIR/output" "$APP_DIR/creds" 2>/dev/null || true
-chmod -R u+rwX "$APP_DIR/output" "$APP_DIR/creds" 2>/dev/null || true
+mkdir -p "$APP_DIR/logs" "$APP_DIR/exports" "$APP_DIR/creds" 2>/dev/null || true
+chown -R wineuser:wineuser "$APP_DIR/logs" "$APP_DIR/exports" "$APP_DIR/creds" 2>/dev/null || true
+chmod -R u+rwX "$APP_DIR/logs" "$APP_DIR/exports" "$APP_DIR/creds" 2>/dev/null || true
 
 # Suppress Wine/Xvfb runtime warnings
 export XDG_RUNTIME_DIR="/tmp/xdg-runtime"
@@ -78,7 +78,7 @@ CMD="$1"
 shift
 
 # Ensure Wine's working directory is APP_DIR so all relative paths
-# (creds/, output/, ExportVaultData/Vault.ini) resolve from there.
+# (creds/, logs/, exports/, ExportVaultData/Vault.ini) resolve from there.
 cd "$APP_DIR"
 
 case "$CMD" in
