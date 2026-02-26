@@ -7,7 +7,7 @@ FROM --platform=linux/amd64 scottyhardy/docker-wine:latest
 # We set up the Wine prefix with .NET 4.8 and VC++ 2015-2022 at build time
 # so the container starts fast. The ExportVaultData application files are
 # NOT baked into the image — they must be volume-mounted at runtime to
-# /home/wineuser/app.
+# /home/wineuser/app/ExportVaultData.
 
 ENV HOME=/home/wineuser
 ENV WINEPREFIX=/home/wineuser/.wine
@@ -31,8 +31,8 @@ RUN xvfb-run winetricks -q dotnet48 && \
 RUN xvfb-run winetricks -q vcrun2022 && \
     wineserver --wait
 
-# Create the app mount point and default subdirectories
-RUN mkdir -p /home/wineuser/app/output /home/wineuser/app/creds && \
+# Create the app directory with mount point for ExportVaultData and default subdirectories
+RUN mkdir -p /home/wineuser/app/ExportVaultData /home/wineuser/app/output /home/wineuser/app/creds && \
     chown -R wineuser:wineuser /home/wineuser/app
 
 WORKDIR /home/wineuser/app
