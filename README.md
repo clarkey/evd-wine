@@ -96,14 +96,14 @@ docker run --rm --network host \
   -v $(pwd)/creds:/home/wineuser/app/creds \
   -v $(pwd)/output:/home/wineuser/app/output \
   evd-wine ExportVaultData \
-    '\VaultFile=Vault.ini' \
-    '\CredFile=..\..\creds\user.cred' \
-    '\LogFile=..\..\output\evd.log' \
+    '\VaultFile=ExportVaultData\Vault.ini' \
+    '\CredFile=creds\user.cred' \
+    '\LogFile=output\evd.log' \
     '\Target=FILE' \
-    '\safeslist=..\..\output\safes.csv'
+    '\safeslist=output\safes.csv'
 ```
 
-> **Note:** The EVD utility expects backslash-prefixed parameters (e.g. `\VaultFile=...`). Wrap each argument in single quotes to prevent the shell from interpreting the backslashes. File paths are relative to the ExportVaultData directory inside the Wine environment.
+> **Note:** The EVD utility expects backslash-prefixed parameters (e.g. `\VaultFile=...`). Wrap each argument in single quotes to prevent the shell from interpreting the backslashes. All file paths are relative to the working directory `/home/wineuser/app/`, so `Vault.ini` is referenced as `ExportVaultData\Vault.ini` while `creds/` and `output/` are direct subdirectories.
 
 ### Available entrypoint commands
 

@@ -77,6 +77,10 @@ fi
 CMD="$1"
 shift
 
+# Ensure Wine's working directory is APP_DIR so all relative paths
+# (creds/, output/, ExportVaultData/Vault.ini) resolve from there.
+cd "$APP_DIR"
+
 case "$CMD" in
     ExportVaultData)
         validate_evd_dir
