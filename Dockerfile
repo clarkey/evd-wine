@@ -4,10 +4,10 @@ FROM --platform=linux/amd64 scottyhardy/docker-wine:latest
 #   - Ubuntu 22.04 with Wine (WineHQ stable), winetricks, xvfb, gosu
 #   - An entrypoint that creates a user and initialises Wine at runtime
 #
-# We need to set up the Wine prefix with .NET 4.8 and VC++ 2015-2022 at
-# build time so the container starts fast. The base image normally does
-# this at runtime, so we do the init ourselves here as root and then
-# fix ownership.
+# We set up the Wine prefix with .NET 4.8 and VC++ 2015-2022 at build time
+# so the container starts fast. The ExportVaultData application files are
+# NOT baked into the image — they must be volume-mounted at runtime to
+# /home/wineuser/app.
 
 ENV HOME=/home/wineuser
 ENV WINEPREFIX=/home/wineuser/.wine
@@ -31,14 +31,11 @@ RUN xvfb-run winetricks -q dotnet48 && \
 RUN xvfb-run winetricks -q vcrun2022 && \
     wineserver --wait
 
-# Copy the application
-COPY --chown=wineuser:wineuser ExportVaultData/ /home/wineuser/app
+# Create the app mount point and default subdirectories
+RUN mkdir -p /home/wineuser/app/output /home/wineuser/app/creds && \
+    chown -R wineuser:wineuser /home/wineuser/app
 
 WORKDIR /home/wineuser/app
-
-# Create default output and creds directories
-RUN mkdir -p /home/wineuser/app/output /home/wineuser/app/creds && \
-    chown wineuser:wineuser /home/wineuser/app/output /home/wineuser/app/creds
 
 # Use our own lightweight entrypoint instead of the base image's
 COPY --chown=wineuser:wineuser entrypoint.sh /home/wineuser/entrypoint.sh
